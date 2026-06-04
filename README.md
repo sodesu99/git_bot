@@ -75,6 +75,8 @@ repositories:
 - `/start` — Welcome message and brief introduction
 - `/help` — Detailed help with command examples
 - `/list` — List all configured repositories
+- `/list add <path> <name>` — Add a repository dynamically
+- `/list rm <name>` — Remove a repository
 - `/check <repo>` — Check a repository for changes
 - `/ck [n] <repo>` — View latest n commits (default 5)
 - `/his [n]` — View your recent n commands (default 10)
