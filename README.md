@@ -12,13 +12,19 @@ A system that monitors Git repositories for changes and interacts via Telegram. 
 
 ## System Architecture
 
-The system consists of three main modules:
+The system is composed of several modules:
 
-1. **Telegram Bot** (`telegram_bot.py`): Handles user commands and sends responses
-2. **Git Watcher** (`git_watcher.py`): Monitors repositories for changes
-3. **Diff Analyzer** (`diff_analyzer.py`): Analyzes changes and prepares messages
-
-Additionally, a **State Machine** (`state_machine.py`) manages the workflow for each check operation.
+| Module | File | Purpose |
+|--------|------|---------|
+| **Telegram Bot** | `telegram_bot.py` | Handles user commands and sends Telegram messages |
+| **Git Watcher** | `git_watcher.py` | Monitors repositories for changes and lightweight remote checks |
+| **Diff Analyzer** | `diff_analyzer.py` | Analyzes changes and prepares formatted Telegram messages |
+| **State Machine** | `state_machine.py` | Manages workflow state with retry logic for each check operation |
+| **Command Executor** | `command_executor.py` | Executes safe/whitelisted shell commands |
+| **Action Dispatcher** | `action_dispatcher.py` | Routes commands and actions through the system |
+| **LLM Engine** | `llm_engine.py` | Optional LLM integration for smart analysis and summaries |
+| **Config Manager** | `config_manager.py` | Configuration loading and validation |
+| **Context Manager** | `context_manager.py` | Manages conversation context and history |
 
 ## Installation
 
@@ -66,14 +72,15 @@ repositories:
 ## Usage
 
 ### Telegram Commands
-- `/start` - Welcome message and brief introduction
-- `/help` - Detailed help with command examples
-- `/list` - List all configured repositories
-- `/check <repo_name>` - Check a specific repository for changes
-- `/ck <n> <repo_name>` - View latest n commits (n optional, default 5)
-- `/his [n]` - View your recent n commands (default 10)
-- `/file <repo> <fileName>` - Find a file from recent updates and send full content
-- `/status` - Show bot status
+- `/start` — Welcome message and brief introduction
+- `/help` — Detailed help with command examples
+- `/list` — List all configured repositories
+- `/check <repo>` — Check a repository for changes
+- `/ck [n] <repo>` — View latest n commits (default 5)
+- `/his [n]` — View your recent n commands (default 10)
+- `/file <repo> <fileName>` — Find and send full content of a file
+- `/allow <command>` — Add a command to the safe allowlist
+- `/status` — Show bot status and active state machines
 
 ### Example Conversation
 ```
@@ -144,14 +151,18 @@ sudo systemctl start git-telegram-bot
 ```
 
 ### Docker
-A Dockerfile is not included but can be easily created. Example:
-```dockerfile
-FROM python:3.9-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-CMD ["python", "main.py", "--config", "config.yaml"]
+
+A `Dockerfile` is included for containerized deployment:
+
+```bash
+docker compose up -d
+```
+
+Or build and run manually:
+
+```bash
+docker build -t git-bot .
+docker run -d --restart always -v $(pwd)/config.yaml:/app/config.yaml git-bot
 ```
 
 ## Error Handling
