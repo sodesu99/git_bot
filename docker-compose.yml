@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  git-telegram-bot:
+    build: .
+    container_name: git-telegram-bot
+    restart: unless-stopped
+    volumes:
+      # Mount configuration file
+      - ./config.yaml:/app/config.yaml:ro
+      # Mount repositories (adjust paths as needed)
+      - /path/to/your/repositories:/repositories:ro
+    environment:
+      - TZ=UTC
+    # Optional: mount logs directory
+    # - ./logs:/app/logs

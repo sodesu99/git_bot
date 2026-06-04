@@ -1,0 +1,36 @@
+# Example configuration for Git-Telegram Bot
+# Copy to config.yaml and fill in your values
+
+# Telegram Bot Token (obtain from @BotFather)
+telegram:
+  token: "YOUR_BOT_TOKEN_HERE"
+  # Optional: restrict bot to specific users
+  # allowed_user_ids: [123456789, 987654321]
+
+# Git repositories configuration
+repositories:
+  # Each repository needs a name and path
+  my-project:
+    path: "/path/to/your/git/repository"
+    branch: "main"           # default branch to compare with
+    remote: "origin"         # remote name
+
+  # Add more repositories as needed
+  # another-repo:
+  #   path: "/another/path"
+  #   branch: "develop"
+  #   remote: "upstream"
+
+# Polling interval in seconds (optional, for automatic checks)
+# Set to 0 to disable periodic checks
+polling_interval: 300  # 5 minutes
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "bot.log"  # set to null or remove to disable file logging
+
+# State machine settings
+state_machine:
+  max_retries: 3
+  retry_delay: 5
