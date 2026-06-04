@@ -151,6 +151,8 @@ class GitTelegramBot:
             "/file backend main.py\n\n"
             "Other commands:\n"
             "/list - Show all configured repositories\n"
+            "/list add <path> <name> - Add a repository\n"
+            "/list rm <name> - Remove a repository\n"
             "/status - Show bot status\n"
             "/allow [cmd|list] - Manage command allowlist\n"
             "/sys - AI Router + Context System (use !, @, /config, or AI)\n"
@@ -185,7 +187,21 @@ class GitTelegramBot:
             else:
                 await update.message.reply_text(f"❌ {message}")
             return
-        
+
+        # Handle /list rm <repo_name>
+        if context.args and len(context.args) >= 1 and context.args[0] == "rm":
+            if len(context.args) < 2:
+                await update.message.reply_text("Usage: /list rm <repo_name>\nExample: /list rm my-project")
+                return
+
+            repo_name = context.args[1].strip()
+            success, message = self.git_watcher.remove_repository(repo_name)
+            if success:
+                await update.message.reply_text(f"🗑️ {message}")
+            else:
+                await update.message.reply_text(f"❌ {message}")
+            return
+
         # Regular /list command - show repositories
         repos = self.git_watcher.list_repositories()
         if not repos:
@@ -206,7 +222,7 @@ class GitTelegramBot:
             else:
                 message += f"• {repo_name} (error loading info)\n\n"
         
-        message += "To add a repository: /list add <path> <repo_name>"
+        message += "To add: /list add <path> <name>\nTo remove: /list rm <name>"
 
         await update.message.reply_text(message)
 

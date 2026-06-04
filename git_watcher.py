@@ -335,6 +335,33 @@ class GitWatcher:
             logger.error(f"Failed to add repository '{repo_name}': {e}")
             return False, f"Failed to add repository: {str(e)}"
 
+    def remove_repository(self, repo_name: str) -> Tuple[bool, str]:
+        """
+        Remove a repository dynamically.
+
+        Args:
+            repo_name: Name of the repository to remove
+
+        Returns:
+            Tuple of (success, message)
+        """
+        if repo_name not in self.repo_configs:
+            return False, f"Repository '{repo_name}' not found"
+
+        # Remove from runtime dicts
+        self.repo_configs.pop(repo_name, None)
+        self.repos.pop(repo_name, None)
+        self._known_remote_heads.pop(repo_name, None)
+
+        # Only persist if it was a custom repo (config.yaml repos are read-only)
+        if repo_name not in self._original_repo_configs:
+            self._persist_custom_repos()
+            logger.info(f"Removed custom repository '{repo_name}'")
+        else:
+            logger.info(f"Removed repository '{repo_name}' from runtime (defined in config.yaml)")
+
+        return True, f"Repository '{repo_name}' removed"
+
     def read_file_content(self, repo_name: str, file_path: str, max_lines: int = 100) -> Optional[str]:
         """
         Read content of a file from repository.
